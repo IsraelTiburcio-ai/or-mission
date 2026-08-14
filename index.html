@@ -3,283 +3,99 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="description" content="OR MISSION — Centro de Operaciones y Toma de Decisiones. Experiencia integradora final de Investigación de Operaciones. Optimización I, Gimnasio 1." />
+  <meta name="description" content="OR EXPRESS — Construye la ruta de Investigación de Operaciones. Microjuego de 90 segundos. Optimización I, Gimnasio 1." />
   <meta name="theme-color" content="#04060f" />
-  <title>OR MISSION — Centro de Operaciones y Toma de Decisiones</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cg fill='none' stroke='%2333d6ff' stroke-width='2.4'%3E%3Ccircle cx='24' cy='24' r='5'/%3E%3Cpath d='M24 19C24 12 28 7 34 6M24 19C24 12 20 7 14 6M24 29v10'/%3E%3C/g%3E%3Ccircle cx='34' cy='6' r='3' fill='%23917bff'/%3E%3Ccircle cx='14' cy='6' r='3' fill='%232fe8c0'/%3E%3Ccircle cx='24' cy='39' r='3' fill='%23ffc531'/%3E%3C/svg%3E" />
+  <title>OR EXPRESS — Construye la ruta de Investigación de Operaciones</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cg fill='none' stroke='%2333d6ff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 18h9l3-6h7l2 6h9l4 5v7H5z'/%3E%3Cpath d='M5 25h38M9 35h4M35 35h4M11 25v10M37 25v10'/%3E%3Ccircle cx='13' cy='38' r='3'/%3E%3Ccircle cx='35' cy='38' r='3'/%3E%3C/g%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/variables.css" />
-  <link rel="stylesheet" href="css/base.css" />
-  <link rel="stylesheet" href="css/layout.css" />
-  <link rel="stylesheet" href="css/components.css" />
-  <link rel="stylesheet" href="css/mission.css" />
-  <link rel="stylesheet" href="css/charts.css" />
-  <link rel="stylesheet" href="css/animations.css" />
-  <link rel="stylesheet" href="css/presentation.css" />
-  <link rel="stylesheet" href="css/print.css" />
-  <link rel="stylesheet" href="css/responsive.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/game.css" />
 </head>
 <body>
   <div id="bg-grid" aria-hidden="true"></div>
-  <a class="skip-link" href="#main">Saltar al contenido principal</a>
 
-  <div id="app">
+  <main id="app">
 
-    <!-- ================= HUD ================= -->
-    <header id="hud" hidden>
-      <div class="hud-left">
-        <button id="hud-logo" class="hud-logo-btn" aria-label="Volver al centro de operaciones">
-          <span class="icon" data-icon="ormission" data-size="24"></span>
-        </button>
-        <div class="hud-word">OR&nbsp;<span class="hud-word-accent">MISSION</span></div>
-        <div class="hud-route" id="hud-route" aria-label="Ruta OR"></div>
+    <!-- ================= PORTADA ================= -->
+    <section id="screen-cover" class="screen screen-cover" aria-label="Portada">
+      <div class="cover-inner">
+        <div class="cover-train" aria-hidden="true"></div>
+        <h1 class="cover-title">OR <span class="t-accent">EXPRESS</span></h1>
+        <p class="cover-sub">Construye la ruta de Investigación de Operaciones</p>
+        <p class="cover-tag">Engancha los vagones en el orden correcto. 8 decisiones · ~90 segundos.</p>
+        <div class="cover-actions">
+          <button id="btn-play" class="btn btn-play">JUGAR ▸</button>
+          <div class="cover-meta">
+            <button id="btn-sound" class="btn btn-icon" aria-label="Activar o desactivar sonido" title="Sonido">🔊</button>
+            <span id="cover-best" class="cover-best"></span>
+          </div>
+        </div>
       </div>
-      <div class="hud-right">
-        <div class="hud-stat hud-stat-pts" id="hud-score-box" title="Puntuación">
-          <span class="hud-stat-label">Pts</span>
-          <b id="hud-score">0</b>
+      <p class="cover-foot">Optimización I · Gimnasio 1 · Investigación de Operaciones</p>
+    </section>
+
+    <!-- ================= GAMEPLAY ================= -->
+    <section id="screen-game" class="screen screen-game" hidden>
+      <header class="hud">
+        <div class="hud-item"><span class="hud-label">Puntos</span><b id="hud-score">0</b></div>
+        <div class="hud-item hud-combo"><span class="hud-label">Combo</span><b id="hud-combo">x1</b></div>
+        <div class="hud-item"><span class="hud-label">Tiempo</span><b id="hud-time">0s</b></div>
+        <button id="hud-sound" class="btn btn-icon hud-sound" aria-label="Activar o desactivar sonido" title="Sonido">🔊</button>
+      </header>
+
+      <div class="stage">
+        <div class="track-zone" aria-hidden="true">
+          <div class="track">
+            <div class="sleepers"></div>
+          </div>
+          <div class="train" id="train">
+            <div class="locomotive" id="locomotive"></div>
+          </div>
+          <div class="station" id="station">
+            <span class="station-label">FIN</span>
+          </div>
         </div>
-        <div class="hud-rank-pill" id="hud-rank" title="Rango del analista"></div>
-        <button id="hud-sound" class="hud-btn" aria-label="Activar o desactivar sonido" title="Sonido">
-          <span class="icon" data-icon="sound-on"></span>
-        </button>
-        <button id="hud-presentation" class="hud-btn" aria-label="Alternar modo presentación" title="Modo presentación">
-          <span class="icon" data-icon="presentation"></span>
-        </button>
-        <button id="hud-home" class="hud-btn" aria-label="Volver al centro de operaciones" title="Centro de operaciones">
-          <span class="icon" data-icon="home"></span>
-        </button>
+
+        <div class="progress" aria-hidden="true">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+
+        <p class="phase-banner" id="phase-banner" aria-live="polite">
+          <span class="pb-num" id="pb-num">01</span>
+          <span class="pb-text" id="pb-text">¿Qué fase sigue?</span>
+        </p>
+
+        <div class="phrase" id="phrase" role="status" aria-live="polite"></div>
+
+        <div class="options" id="options" role="group" aria-label="Vagones disponibles"></div>
       </div>
-    </header>
+    </section>
 
-    <main id="main" tabindex="-1">
-
-      <!-- ============ HOME ============ -->
-      <section id="screen-home" class="screen" data-screen="home">
-        <div class="home-wrap">
-          <div class="home-orb" aria-hidden="true"></div>
-          <div class="home-brand">
-            <span class="icon home-logo-ring" data-icon="ormission" data-size="86"></span>
-            <h1 class="home-title">OR <span class="t-accent">MISSION</span></h1>
-            <p class="home-subtitle">Centro de Operaciones y Toma de Decisiones</p>
-            <p class="home-tagline">
-              Los problemas reales rara vez llegan perfectamente definidos.
-              Tu misión será analizarlos, estructurarlos y convertirlos en decisiones fundamentadas.
-            </p>
-          </div>
-          <div class="home-actions">
-            <button id="btn-enter" class="btn btn-primary btn-lg">ENTRAR AL CENTRO DE OPERACIONES</button>
-            <button id="btn-continue" class="btn btn-ghost btn-lg" hidden>CONTINUAR MISIÓN</button>
-            <div class="home-mini-actions">
-              <button id="btn-tutorial" class="btn btn-ghost">Tutorial</button>
-              <button id="btn-info" class="btn btn-ghost">Información del juego</button>
-              <button id="btn-sound-home" class="btn btn-ghost">🔊 Sonido: activado</button>
-              <button id="btn-reset" class="btn btn-ghost btn-danger-ghost">Reiniciar progreso</button>
-            </div>
-          </div>
-          <footer class="home-footer">
-            <span>Optimización I — Gimnasio 1 · Introducción a la Teoría de Sistemas</span>
-          </footer>
+    <!-- ================= RESULTADO ================= -->
+    <section id="screen-result" class="screen screen-result" hidden>
+      <div class="result-inner">
+        <div class="result-train" aria-hidden="true"></div>
+        <h2 class="result-title">OR EXPRESS <span class="t-accent">COMPLETADO</span></h2>
+        <div class="result-stats">
+          <div class="stat"><b id="res-correct">8/8</b><span>aciertos</span></div>
+          <div class="stat"><b id="res-score">0</b><span>puntos</span></div>
+          <div class="stat"><b id="res-time">0s</b><span>tiempo</span></div>
+          <div class="stat"><b id="res-combo">x1</b><span>combo máx</span></div>
         </div>
-      </section>
-
-      <!-- ============ INTRO CINEMÁTICA ============ -->
-      <section id="screen-intro" class="screen" data-screen="intro" hidden>
-        <div class="intro-stage" id="intro-stage">
-          <button id="intro-skip" class="btn btn-ghost btn-sm intro-skip">Omitir secuencia ⏭</button>
-          <div class="intro-viewport" id="intro-viewport" role="img" aria-label="Secuencia de presentación de la Investigación de Operaciones"></div>
+        <p class="result-msg" id="res-msg">¡Excelente!</p>
+        <div class="result-actions">
+          <button id="btn-again" class="btn btn-play">NUEVO VIAJE ▸</button>
+          <button id="btn-cover" class="btn btn-ghost">Portada</button>
         </div>
-      </section>
+      </div>
+      <p class="cover-foot">Optimización I · Gimnasio 1 · Investigación de Operaciones</p>
+    </section>
+  </main>
 
-      <!-- ============ NOMBRE ============ -->
-      <section id="screen-name" class="screen" data-screen="name" hidden>
-        <div class="wrap-center wrap-narrow">
-          <div class="panel-card panel-card-soft">
-            <div class="panel-card-head">
-              <span class="icon" data-icon="analyst" data-size="34"></span>
-              <h2>REGISTRO DE <span>ANALISTA</span></h2>
-              <p class="screen-sub">Escribe tu nombre o alias. Se guardará solo en este dispositivo.</p>
-            </div>
-            <form id="name-form" class="name-form">
-              <label class="field-label" for="input-name">Nombre / alias</label>
-              <input id="input-name" class="text-input" type="text" maxlength="28" autocomplete="off"
-                     placeholder="Ej. Analista Nova" aria-describedby="name-help" />
-              <p id="name-help" class="field-help">No pedimos correo, matrícula ni ningún dato personal sensible.</p>
-              <div class="btn-row">
-                <button type="button" id="name-back" class="btn btn-ghost">◀ Volver</button>
-                <button type="submit" id="name-go" class="btn btn-primary">INGRESAR AL CENTRO ▸</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </section>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 
-      <!-- ============ CENTRO DE OPERACIONES ============ -->
-      <section id="screen-command" class="screen" data-screen="command" hidden>
-        <div class="command-wrap">
-          <header class="command-head">
-            <div class="command-title">
-              <span class="icon" data-icon="ormission" data-size="30"></span>
-              <div>
-                <h1>CENTRO DE OPERACIONES</h1>
-                <p class="screen-sub">Operations Research Command Center — ruta de análisis y misiones</p>
-              </div>
-            </div>
-            <div class="command-head-actions">
-              <button id="cmd-archives" class="btn btn-ghost btn-sm"><span class="icon" data-icon="folder" data-size="16"></span> Archivo de métodos</button>
-              <button id="cmd-history" class="btn btn-ghost btn-sm"><span class="icon" data-icon="history" data-size="16"></span> Archivo histórico</button>
-              <button id="cmd-dashboard" class="btn btn-ghost btn-sm"><span class="icon" data-icon="file" data-size="16"></span> Expediente</button>
-              <button id="cmd-achievements" class="btn btn-ghost btn-sm"><span class="icon" data-icon="trophy" data-size="16"></span> Logros</button>
-            </div>
-          </header>
-
-          <section class="route-panel" aria-labelledby="route-title">
-            <div class="route-head">
-              <h2 id="route-title">RUTA DE OPERACIONES</h2>
-              <p class="screen-sub">Ocho estaciones conectadas: el corazón de la Investigación de Operaciones</p>
-            </div>
-            <div class="route-board" id="route-board"></div>
-          </section>
-
-          <section class="missions-panel" aria-labelledby="missions-title">
-            <div class="missions-head">
-              <h2 id="missions-title">MISIONES DE CAMPO</h2>
-              <div class="missions-actions">
-                <button id="cmd-free" class="btn btn-ghost btn-sm"><span class="icon" data-icon="sandbox" data-size="16"></span> Sala de análisis</button>
-                <button id="cmd-revision" class="btn btn-ghost btn-sm" hidden><span class="icon" data-icon="revision" data-size="16"></span> Modo analista</button>
-                <button id="cmd-presentation" class="btn btn-ghost btn-sm" aria-pressed="false"><span class="icon" data-icon="presentation" data-size="16"></span> Modo presentación</button>
-              </div>
-            </div>
-            <div class="missions-grid" id="missions-grid"></div>
-          </section>
-        </div>
-      </section>
-
-      <!-- ============ MISIÓN (fases) ============ -->
-      <section id="screen-mission" class="screen" data-screen="mission" hidden>
-        <div id="mission-host" class="mission-host"></div>
-      </section>
-
-      <!-- ============ ARCHIVO DE MÉTODOS ============ -->
-      <section id="screen-archives" class="screen" data-screen="archives" hidden>
-        <div class="wrap-center">
-          <header class="screen-head">
-            <h2>ARCHIVO DE <span>MÉTODOS</span></h2>
-            <p class="screen-sub">Herramientas de la Investigación de Operaciones — se desbloquean con cada misión</p>
-          </header>
-          <div id="methods-grid" class="methods-grid"></div>
-          <div class="btn-row">
-            <button id="archives-back" class="btn btn-ghost">◀ Volver al centro</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- ============ ARCHIVO HISTÓRICO ============ -->
-      <section id="screen-history" class="screen" data-screen="history" hidden>
-        <div class="wrap-center wrap-narrow">
-          <header class="screen-head">
-            <h2>ARCHIVO <span>HISTÓRICO</span></h2>
-            <p class="screen-sub">Origen y desarrollo de la Investigación de Operaciones</p>
-          </header>
-          <div id="history-host" class="history-host"></div>
-          <div class="btn-row">
-            <button id="history-back" class="btn btn-ghost">◀ Volver al centro</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- ============ EXPEDIENTE ============ -->
-      <section id="screen-dashboard" class="screen" data-screen="dashboard" hidden>
-        <div class="wrap-center">
-          <header class="screen-head">
-            <h2>EXPEDIENTE DEL <span>ANALISTA</span></h2>
-            <p class="screen-sub">Registro de misiones, precisión y estadísticas de análisis</p>
-          </header>
-          <div id="dashboard-host" class="dashboard-host"></div>
-          <div class="btn-row">
-            <button id="dashboard-back" class="btn btn-ghost">◀ Volver al centro</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- ============ LOGROS ============ -->
-      <section id="screen-achievements" class="screen" data-screen="achievements" hidden>
-        <div class="wrap-center">
-          <header class="screen-head">
-            <h2>SALA DE <span>LOGROS</span></h2>
-            <p class="screen-sub">Marcas de la trayectoria del analista</p>
-          </header>
-          <div id="ach-grid" class="ach-grid"></div>
-          <div class="btn-row">
-            <button id="ach-back" class="btn btn-ghost">◀ Volver al centro</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- ============ MODO ANALISTA (revisión) ============ -->
-      <section id="screen-revision" class="screen" data-screen="revision" hidden>
-        <div class="wrap-center">
-          <header class="screen-head">
-            <h2>MODO <span>ANALISTA</span></h2>
-            <p class="screen-sub">Repite misiones ya completadas y supera tus marcas</p>
-          </header>
-          <div id="revision-host" class="revision-host"></div>
-          <div class="btn-row">
-            <button id="revision-back" class="btn btn-ghost">◀ Volver al centro</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- ============ SALA DE ANÁLISIS (libre) ============ -->
-      <section id="screen-free" class="screen" data-screen="free" hidden>
-        <div class="wrap-center">
-          <header class="screen-head">
-            <h2>SALA DE <span>ANÁLISIS</span></h2>
-            <p class="screen-sub">Recorre libremente cualquier escenario sin puntuación. Ideal para demostraciones en clase.</p>
-          </header>
-          <div id="free-host" class="free-host"></div>
-          <div class="btn-row">
-            <button id="free-back" class="btn btn-ghost">◀ Volver al centro</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- ============ MISIÓN COMPLETADA / REGISTRO ============ -->
-      <section id="screen-missiondone" class="screen" data-screen="missiondone" hidden>
-        <div id="missiondone-host" class="wrap-center"></div>
-      </section>
-
-      <!-- ============ FINAL: ruta del gimnasio + cierre ============ -->
-      <section id="screen-final" class="screen" data-screen="final" hidden>
-        <div id="final-host" class="final-host"></div>
-      </section>
-
-    </main>
-  </div>
-
-  <div id="toast-region" class="toast-region" aria-live="polite"></div>
-  <div id="modal-root"></div>
-
-  <!-- datos -->
-  <script src="data/achievements.js"></script>
-  <script src="data/methods.js"></script>
-  <script src="data/history.js"></script>
-  <script src="data/missions.js"></script>
-  <script src="data/finalMission.js"></script>
-  <!-- núcleo -->
-  <script src="js/state.js"></script>
-  <script src="js/storage.js"></script>
-  <script src="js/audio.js"></script>
-  <script src="js/ui.js"></script>
-  <script src="js/charts.js"></script>
-  <script src="js/scoring.js"></script>
-  <script src="js/achievements.js"></script>
-  <script src="js/simEngine.js"></script>
-  <script src="js/missionEngine.js"></script>
-  <script src="js/phaseRenderer.js"></script>
-  <script src="js/screens.js"></script>
-  <script src="js/app.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/game.js"></script>
 </body>
 </html>
