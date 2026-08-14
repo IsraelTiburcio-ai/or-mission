@@ -30,6 +30,16 @@
   .intro-phases { grid-template-columns: repeat(2, auto); }
 }
 
+@media (max-height: 700px) {
+  .home-wrap { justify-content: flex-start; padding-top: 28px; }
+
+  .home-actions { margin-top: 22px; }
+
+  .home-footer { position: static; margin-top: 18px; }
+
+  .home-tagline { max-width: 480px; font-size: 0.92rem; }
+}
+
 @media (max-width: 640px) {
   body { font-size: 16px; }
 
