@@ -1,0 +1,24 @@
+# Sistema
+.DS_Store
+Thumbs.db
+*.swp
+
+# Logs
+*.log
+npm-debug.log*
+
+# Dependencias / build generado (no aplica: proyecto sin build)
+node_modules/
+dist/
+build/
+
+# Entornos y secretos (el proyecto no los requiere)
+.env
+.env.*
+*.pem
+*.key
+
+# IDE
+.vscode/
+.idea/
+*.code-workspace

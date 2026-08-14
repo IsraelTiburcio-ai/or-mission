@@ -1,0 +1,231 @@
+/* ============================================================
+   OR MISSION · css/charts.css
+   Gráficas SVG: barras, comparadores, medidores, route map.
+   ============================================================ */
+
+.chart-bar-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 18px;
+  height: 140px;
+  padding: 10px 6px 0;
+}
+
+.chart-bar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.chart-bar .cb-track {
+  width: 100%;
+  max-width: 70px;
+  flex: 1;
+  border-radius: 8px 8px 4px 4px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+}
+
+.chart-bar .cb-fill {
+  width: 100%;
+  border-radius: 4px;
+  transition: height 0.9s var(--ease);
+  min-height: 2px;
+}
+
+.chart-bar .cb-fill.f-before { background: linear-gradient(180deg, #ff8a7d, #ff6b5e); box-shadow: 0 0 12px rgba(255, 107, 94, 0.35); }
+.chart-bar .cb-fill.f-after { background: linear-gradient(180deg, #4bf0c8, #2fe8c0); box-shadow: 0 0 12px rgba(47, 232, 192, 0.35); }
+.chart-bar .cb-fill.f-data { background: linear-gradient(180deg, #4fd6ff, #33d6ff); box-shadow: 0 0 12px rgba(51, 214, 255, 0.3); }
+
+.chart-bar .cb-value {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-1);
+}
+
+.chart-bar .cb-label {
+  font-size: 0.72rem;
+  color: var(--text-2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+
+/* Medidor radial */
+.gauge-wrap {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.gauge {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  flex: none;
+}
+
+.gauge svg { transform: rotate(-90deg); }
+
+.gauge .g-track { stroke: var(--bg-2); stroke-width: 10; }
+.gauge .g-fill { stroke: url(#gaugeGrad); stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset 1s var(--ease); }
+
+.gauge .g-center {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-0);
+}
+
+.gauge-label {
+  font-size: 0.8rem;
+  color: var(--text-2);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* Ruta de operaciones (command center) */
+.route-board svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.route-board .rb-station {
+  cursor: pointer;
+  transition: opacity var(--t);
+}
+
+.route-board .rb-station.locked { cursor: default; opacity: 0.55; }
+
+.route-board .rb-node {
+  transition: all var(--t) var(--ease);
+}
+
+.route-board .rb-station.active .rb-node {
+  stroke: var(--cyan);
+  fill: rgba(51, 214, 255, 0.16);
+  filter: drop-shadow(0 0 8px rgba(51, 214, 255, 0.7));
+}
+
+.route-board .rb-station.done .rb-node {
+  stroke: var(--teal);
+  fill: rgba(47, 232, 192, 0.13);
+}
+
+.route-board .rb-station.locked .rb-node {
+  stroke: var(--text-2);
+  fill: rgba(60, 74, 105, 0.2);
+  stroke-dasharray: 4 3;
+}
+
+.route-board .rb-num {
+  fill: var(--text-1);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.route-board .rb-station.active .rb-num { fill: var(--cyan); }
+.route-board .rb-station.done .rb-num { fill: var(--teal); }
+
+.route-board .rb-label {
+  fill: var(--text-2);
+  font-family: var(--font-ui);
+  font-size: 11.5px;
+  font-weight: 600;
+  text-anchor: middle;
+  letter-spacing: 0.04em;
+}
+
+.route-board .rb-station.active .rb-label { fill: var(--cyan); }
+.route-board .rb-station.done .rb-label { fill: var(--text-1); }
+
+.route-board .rb-link {
+  stroke: var(--line);
+  stroke-width: 1.6;
+  fill: none;
+  stroke-dasharray: 5 4;
+}
+
+.route-board .rb-link.lit {
+  stroke: rgba(47, 232, 192, 0.6);
+  stroke-dasharray: none;
+}
+
+.route-board .rb-link.next {
+  stroke: rgba(51, 214, 255, 0.5);
+}
+
+/* Mini radar (fase 1) */
+.mini-radar {
+  width: 100%;
+  max-width: 240px;
+  margin: 0 auto;
+}
+
+/* Conector nodos de construcción */
+.canvas-svg .c-link {
+  stroke: rgba(145, 123, 255, 0.55);
+  stroke-width: 2;
+  stroke-dasharray: 6 4;
+  animation: dash-flow 1.2s linear infinite;
+  transition: stroke 0.3s;
+}
+
+.canvas-svg .c-link.ok { stroke: rgba(47, 232, 192, 0.7); stroke-dasharray: none; animation: none; }
+.canvas-svg .c-link.wrong { stroke: rgba(255, 107, 94, 0.7); }
+
+/* Barras comparativas (resultados) */
+.cmp-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cmp-row { display: flex; flex-direction: column; gap: 5px; }
+
+.cmp-label {
+  font-size: 0.76rem;
+  color: var(--text-2);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  display: flex;
+  justify-content: space-between;
+}
+
+.cmp-label b { font-family: var(--font-mono); color: var(--text-1); }
+
+.cmp-track {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.cmp-track .ct-bar {
+  height: 16px;
+  border-radius: 8px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+
+.cmp-track .ct-fill {
+  height: 100%;
+  border-radius: 8px;
+  transition: width 0.9s var(--ease);
+}
+
+.cmp-track .ct-fill.c-before { background: linear-gradient(90deg, #ff6b5e, #ff9a8a); }
+.cmp-track .ct-fill.c-after { background: linear-gradient(90deg, #2fe8c0, #6df3d5); }
