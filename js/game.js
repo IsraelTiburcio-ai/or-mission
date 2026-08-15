@@ -28,7 +28,8 @@
     score: 0,
     combo: 1,
     maxCombo: 1,
-    correct: 0,
+    correct: 0,      // aciertos a la primera
+    rounds: 0,       // rondas completadas (avance del tren)
     wrong: 0,
     t0: 0,
     timer: null,
@@ -160,7 +161,9 @@
     state.busy = true;
     const comboPts = 100 + 50 * (state.combo - 1);
     state.score += comboPts;
-    state.correct += 1;
+    // solo cuenta como acierto si se atinó a la primera
+    if (!state.wrongMap[state.idx]) state.correct += 1;
+    state.rounds += 1;
     const combo = state.combo;
     state.combo += 1;
     state.maxCombo = Math.max(state.maxCombo, state.combo - 1);
@@ -185,7 +188,7 @@
     loco.appendChild(steam);
 
     // avanzar tren
-    const pct = state.correct / PHASES.length;
+    const pct = state.rounds / PHASES.length;
     train.style.transition = "left .7s cubic-bezier(.22,1,.36,1)";
     train.style.left = (2 + pct * 62) + "%";
 
@@ -200,7 +203,7 @@
     const delay = isReduced() ? 120 : 750;
     setTimeout(() => {
       car.classList.remove("coupling");
-      if (state.correct >= PHASES.length) {
+      if (state.rounds >= PHASES.length) {
         finish();
       } else {
         state.idx += 1;
@@ -292,7 +295,7 @@
     $("#hud-score").textContent = fmt(state.score);
     $("#hud-combo").textContent = "x" + combo;
     $("#hud-combo").classList.toggle("combo-hot", combo > 1);
-    const pct = (state.correct / PHASES.length) * 100;
+    const pct = (state.rounds / PHASES.length) * 100;
     $("#progress-fill").style.width = pct + "%";
   }
 
@@ -391,6 +394,7 @@
     state.combo = 1;
     state.maxCombo = 1;
     state.correct = 0;
+    state.rounds = 0;
     state.wrong = 0;
     state.busy = false;
     state.wrongMap = {};
