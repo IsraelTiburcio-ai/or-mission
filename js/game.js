@@ -171,17 +171,18 @@
       if (j !== i) o.classList.add("opt-dim");
     });
 
-    // enganchar vagón al tren
+    // enganchar vagón al tren (detrás de la locomotora, que va al frente)
     const train = $("#train");
+    const loco = $("#locomotive");
     const car = document.createElement("div");
     car.className = "train-car coupling";
     car.innerHTML = wagonSVG(ph.name);
     car.setAttribute("aria-hidden", "true");
-    train.appendChild(car);
-    // vapor
+    train.insertBefore(car, loco);
+    // vapor junto a la chimenea de la locomotora
     const steam = document.createElement("span");
     steam.className = "steam";
-    train.appendChild(steam);
+    loco.appendChild(steam);
 
     // avanzar tren
     const pct = state.correct / PHASES.length;
@@ -280,6 +281,9 @@
     else if (pct >= 0.5) msg = "Buen viaje";
     else msg = "Sigue practicando";
     $("#res-msg").textContent = msg;
+    // tren del resultado: vagones en orden + locomotora al frente
+    const rt = $("#screen-result .result-train");
+    rt.innerHTML = PHASES.map((p) => wagonSVG(p.name, { size: 9 })).join("") + locoSVG();
     $("#btn-again").focus();
   }
 
@@ -421,7 +425,8 @@
   /* ---------- portada ---------- */
   function renderCover() {
     const cover = $("#screen-cover .cover-train");
-    cover.innerHTML = locoSVG() + PHASES.map((p) => wagonSVG(p.name, { size: 9 })).join("");
+    // vagones en orden, la locomotora al frente (a la derecha)
+    cover.innerHTML = PHASES.map((p) => wagonSVG(p.name, { size: 9 })).join("") + locoSVG();
     $("#cover-best").textContent = state.best.score ? `Mejor: ${fmt(state.best.score)} pts · ${state.best.time}s` : "";
     $("#btn-sound").textContent = state.sound ? "🔊" : "🔇";
     $("#hud-sound").textContent = state.sound ? "🔊" : "🔇";

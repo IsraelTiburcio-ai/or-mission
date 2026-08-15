@@ -273,12 +273,12 @@ button:focus-visible, [tabindex]:focus-visible {
 
 .train-car { animation: couple-in 0.55s var(--ease-back); }
 
-.train-car.coupling { animation: couple-in 0.55s var(--ease-back); }
+.locomotive { position: relative; }
 
 .steam {
   position: absolute;
   top: -14px;
-  left: 34px;
+  left: 30px;
   width: 10px;
   height: 10px;
   border-radius: 50%;
@@ -624,7 +624,7 @@ button:focus-visible, [tabindex]:focus-visible {
 
 /* ---------- animaciones ---------- */
 @keyframes couple-in {
-  from { opacity: 0; transform: translateX(56px) scale(0.92); }
+  from { opacity: 0; transform: translateX(48px) scale(0.94); }
   to { opacity: 1; transform: translateX(0) scale(1); }
 }
 
@@ -676,7 +676,8 @@ button:focus-visible, [tabindex]:focus-visible {
 @media (max-width: 720px) {
   .cover-train svg { height: 26px; }
 
-  .cover-train svg:nth-child(n+5) { display: none; }
+  /* en móvil se muestra el frente del tren: últimos vagones + locomotora */
+  .cover-train svg:nth-child(-n+4) { display: none; }
 
   .options { gap: 8px; }
 
