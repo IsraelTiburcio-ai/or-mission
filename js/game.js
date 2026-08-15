@@ -35,6 +35,7 @@
     options: [],
     busy: false,
     sound: true,
+    wrongMap: {},       // idx de fase -> true si se falló en esa ronda
     best: { score: 0, time: 0 }
   };
 
@@ -212,6 +213,7 @@
   function wrong(ph, btn, i) {
     state.wrong += 1;
     state.combo = 1;
+    state.wrongMap[state.idx] = true;
     btn.classList.add("opt-wrong");
     sfx.error();
     updateHud(0, 1);
@@ -306,6 +308,78 @@
     showToast._t = setTimeout(() => { el.hidden = true; }, 2600);
   }
 
+  /* ---------- revisión de respuestas ---------- */
+  function openReview() {
+    const backdrop = document.createElement("div");
+    backdrop.className = "modal-backdrop";
+    backdrop.setAttribute("role", "presentation");
+    const modal = document.createElement("div");
+    modal.className = "modal";
+    modal.setAttribute("role", "dialog");
+    modal.setAttribute("aria-modal", "true");
+    modal.setAttribute("aria-label", "Respuestas correctas");
+
+    const head = document.createElement("div");
+    head.className = "modal-head";
+    const title = document.createElement("h3");
+    title.textContent = "RESPUESTAS CORRECTAS";
+    const closeBtn = document.createElement("button");
+    closeBtn.className = "modal-close";
+    closeBtn.textContent = "✕";
+    closeBtn.setAttribute("aria-label", "Cerrar");
+    head.appendChild(title);
+    head.appendChild(closeBtn);
+    modal.appendChild(head);
+
+    const list = document.createElement("ol");
+    list.className = "review-list";
+    PHASES.forEach((ph, i) => {
+      const item = document.createElement("li");
+      const missed = state.wrongMap[i];
+      item.className = "review-item" + (missed ? " missed" : " hit");
+      item.innerHTML = `
+        <span class="ri-status" aria-hidden="true">${missed ? "✕" : "✓"}</span>
+        <span class="ri-num">${ph.num}</span>
+        <span class="ri-name">${ph.name}</span>
+        <span class="ri-tag">${ph.tag}</span>`;
+      list.appendChild(item);
+    });
+    modal.appendChild(list);
+
+    const note = document.createElement("p");
+    note.className = "review-note";
+    const failed = Object.keys(state.wrongMap).length;
+    note.textContent = failed
+      ? `Fallaste ${failed} ${failed === 1 ? "fase" : "fases"}: las marcadas en rojo. Recuerda el orden del proceso.`
+      : "Perfecto: enganchaste las 8 fases en el orden correcto del proceso.";
+    modal.appendChild(note);
+
+    const actions = document.createElement("div");
+    actions.className = "modal-actions";
+    const okBtn = document.createElement("button");
+    okBtn.className = "btn btn-play btn-sm";
+    okBtn.textContent = "ENTENDIDO";
+    actions.appendChild(okBtn);
+    modal.appendChild(actions);
+
+    function close() {
+      backdrop.remove();
+      document.removeEventListener("keydown", onKey, true);
+      $("#btn-review").focus();
+    }
+    function onKey(e) {
+      if (e.key === "Escape") { e.stopPropagation(); close(); }
+    }
+    closeBtn.addEventListener("click", close);
+    okBtn.addEventListener("click", close);
+    backdrop.addEventListener("click", (e) => { if (e.target === backdrop) close(); });
+    document.addEventListener("keydown", onKey, true);
+
+    document.body.appendChild(backdrop);
+    backdrop.appendChild(modal);
+    okBtn.focus();
+  }
+
   /* ---------- partida ---------- */
   function start() {
     state.idx = 0;
@@ -315,6 +389,7 @@
     state.correct = 0;
     state.wrong = 0;
     state.busy = false;
+    state.wrongMap = {};
 
     // limpiar tren
     $("#train").innerHTML = `<div class="locomotive" id="locomotive"></div>`;
@@ -357,6 +432,7 @@
   function bind() {
     $("#btn-play").addEventListener("click", start);
     $("#btn-again").addEventListener("click", start);
+    $("#btn-review").addEventListener("click", openReview);
     $("#btn-cover").addEventListener("click", () => {
       state.screen = "cover";
       $("#screen-result").hidden = true;
