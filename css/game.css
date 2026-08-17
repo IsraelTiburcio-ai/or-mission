@@ -114,6 +114,14 @@ button:focus-visible, [tabindex]:focus-visible {
 
 .btn-ghost { background: rgba(12, 22, 44, 0.55); }
 
+.btn-reto { font-size: 0.66rem; padding: 8px 14px; letter-spacing: 0.08em; color: var(--text-1); }
+
+.btn-reto[aria-pressed="true"] {
+  color: var(--amber);
+  border-color: rgba(255, 197, 49, 0.55);
+  background: rgba(255, 197, 49, 0.1);
+}
+
 /* ---------- portada ---------- */
 .cover-inner {
   display: flex;
@@ -273,6 +281,12 @@ button:focus-visible, [tabindex]:focus-visible {
 
 .train-car { animation: couple-in 0.55s var(--ease-back); }
 
+.train-car.missed { opacity: 0.6; }
+
+.train-car.missed svg path { stroke: var(--coral); }
+
+.train-car.missed svg text { fill: var(--coral); }
+
 .locomotive { position: relative; }
 
 .steam {
@@ -340,15 +354,24 @@ button:focus-visible, [tabindex]:focus-visible {
   min-height: 30px;
 }
 
-.pb-num {
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  color: var(--cyan);
-  border: 1px solid rgba(51, 214, 255, 0.4);
-  background: rgba(51, 214, 255, 0.1);
-  padding: 3px 9px;
+/* ---------- temporizador de ronda (modo reto) ---------- */
+.round-timer {
+  height: 7px;
   border-radius: 99px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  overflow: hidden;
 }
+
+.rt-fill {
+  height: 100%;
+  width: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #33d6ff, #2fe8c0);
+  transition: none;
+}
+
+.rt-fill.rt-warn { background: linear-gradient(90deg, #ff9e3d, #ff6b5e); }
 
 /* ---------- frase breve ---------- */
 .phrase {
@@ -365,7 +388,7 @@ button:focus-visible, [tabindex]:focus-visible {
 /* ---------- opciones (vagones) ---------- */
 .options {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 14px;
   margin-top: 6px;
 }
@@ -388,13 +411,6 @@ button:focus-visible, [tabindex]:focus-visible {
 .option:active { transform: scale(0.96); }
 
 .opt-wagon svg { width: auto; height: 44px; }
-
-.opt-num {
-  font-family: var(--font-mono);
-  font-size: 0.66rem;
-  color: var(--text-2);
-  letter-spacing: 0.16em;
-}
 
 .option.opt-correct {
   border-color: var(--teal);
@@ -679,7 +695,7 @@ button:focus-visible, [tabindex]:focus-visible {
   /* en móvil se muestra el frente del tren: últimos vagones + locomotora */
   .cover-train svg:nth-child(-n+4) { display: none; }
 
-  .options { gap: 8px; }
+  .options { gap: 8px; grid-template-columns: repeat(2, 1fr); }
 
   .opt-wagon svg { height: 34px; }
 

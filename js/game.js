@@ -36,6 +36,9 @@
     options: [],
     busy: false,
     sound: true,
+    reto: false,
+    usedDecoys: [],
+    roundTimer: null,
     wrongMap: {},       // idx de fase -> true si se falló en esa ronda
     best: { score: 0, time: 0 }
   };
@@ -45,6 +48,7 @@
     try {
       const raw = JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
       state.sound = raw.sound !== false;
+      state.reto = raw.reto === true;
       state.best = { score: raw.bestScore || 0, time: raw.bestTime || 0 };
     } catch (e) { /* sin almacenamiento */ }
   }
@@ -52,6 +56,7 @@
     try {
       localStorage.setItem(STORE_KEY, JSON.stringify({
         sound: state.sound,
+        reto: state.reto,
         bestScore: state.best.score,
         bestTime: state.best.time
       }));
@@ -117,14 +122,20 @@
   /* ---------- opciones ---------- */
   function makeOptions() {
     const correct = PHASES[state.idx];
-    const unused = PHASES.slice(state.idx + 1);
-    // barajar distractores (aleatorio no afecta lo académico: solo orden de presentación)
-    for (let i = unused.length - 1; i > 0; i--) {
+    // distractores confundibles: fases cercanas a la correcta (±2)
+    const neighbors = PHASES.filter((p, j) => j !== state.idx && Math.abs(j - state.idx) <= 2);
+    for (let i = neighbors.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [unused[i], unused[j]] = [unused[j], unused[i]];
+      [neighbors[i], neighbors[j]] = [neighbors[j], neighbors[i]];
     }
-    const distractors = unused.slice(0, 2);
-    const options = [correct, ...distractors];
+    const distractors = neighbors.slice(0, 2);
+    // término falso (no es una fase del material), sin repetir en la misma partida
+    let decoy = DECOYS.find((d) => !state.usedDecoys.includes(d));
+    if (!decoy) decoy = DECOYS[Math.floor(Math.random() * DECOYS.length)];
+    state.usedDecoys.push(decoy);
+    const decoyOption = { id: "decoy-" + decoy, name: decoy };
+
+    const options = [correct, ...distractors, decoyOption];
     for (let i = options.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [options[i], options[j]] = [options[j], options[i]];
@@ -138,12 +149,12 @@
     state.options.forEach((ph, i) => {
       const btn = document.createElement("button");
       btn.className = "option";
-      btn.innerHTML = `<span class="opt-wagon">${wagonSVG(ph.name, { stroke: "#33d6ff" })}</span><span class="opt-num">${ph.num}</span>`;
-      btn.setAttribute("aria-label", `Vagón ${ph.num}: ${ph.name}`);
+      btn.innerHTML = `<span class="opt-wagon">${wagonSVG(ph.name, { stroke: "#33d6ff" })}</span>`;
+      btn.setAttribute("aria-label", `Vagón: ${ph.name}`);
       btn.addEventListener("click", () => pick(i, btn));
       host.appendChild(btn);
     });
-    // atajo de teclado 1-3
+    // atajo de teclado 1-4
   }
 
   function pick(i, btn) {
@@ -159,6 +170,7 @@
   /* ---------- acierto ---------- */
   function correct(ph, btn, i) {
     state.busy = true;
+    clearRoundTimer();
     const comboPts = 100 + 50 * (state.combo - 1);
     state.score += comboPts;
     // solo cuenta como acierto si se atinó a la primera
@@ -193,7 +205,6 @@
     train.style.left = (2 + pct * 62) + "%";
 
     // frase breve
-    $("#pb-num").textContent = ph.num;
     $("#pb-text").textContent = ph.name;
     showPhrase(`<b>${ph.name}</b> — ${ph.tag}`);
 
@@ -218,11 +229,12 @@
     state.wrong += 1;
     state.combo = 1;
     state.wrongMap[state.idx] = true;
+    state.score = Math.max(0, state.score - 50);
     btn.classList.add("opt-wrong");
     sfx.error();
     updateHud(0, 1);
     $("#phrase").textContent = "";
-    showToast(`«${ph.name}» no es la siguiente fase. Sigue intentando.`);
+    showToast(`«${ph.name}» no es la siguiente fase. -50 pts. Sigue intentando.`);
     setTimeout(() => {
       btn.classList.remove("opt-wrong");
       btn.classList.add("opt-gone");
@@ -234,13 +246,89 @@
     }, isReduced() ? 60 : 420);
   }
 
+  /* ---------- temporizador de ronda (modo reto) ---------- */
+  function startRoundTimer() {
+    if (!state.reto) return;
+    const fill = $("#rt-fill");
+    const wrap = $("#round-timer");
+    wrap.hidden = false;
+    fill.classList.remove("rt-warn");
+    fill.style.width = "100%";
+    let remaining = RETO_SECONDS * 1000;
+    const step = 100;
+    state.roundTimer = setInterval(() => {
+      remaining -= step;
+      fill.style.width = Math.max(0, (remaining / (RETO_SECONDS * 1000)) * 100) + "%";
+      if (remaining <= 2000) fill.classList.add("rt-warn");
+      if (remaining <= 0) {
+        clearInterval(state.roundTimer);
+        state.roundTimer = null;
+        roundTimeout();
+      }
+    }, step);
+  }
+
+  function clearRoundTimer() {
+    if (state.roundTimer) {
+      clearInterval(state.roundTimer);
+      state.roundTimer = null;
+    }
+    const wrap = $("#round-timer");
+    if (wrap) wrap.hidden = true;
+  }
+
+  /* El tiempo se agotó: cuenta como error y se revela la fase correcta. */
+  function roundTimeout() {
+    if (state.busy) return;
+    state.busy = true;
+    state.wrong += 1;
+    state.combo = 1;
+    state.wrongMap[state.idx] = true;
+    state.score = Math.max(0, state.score - 50);
+    const ph = PHASES[state.idx];
+    updateHud(0, 1);
+    sfx.error();
+    showToast(`Se acabó el tiempo: la fase era ${ph.name}. -50 pts.`);
+
+    // revelar la fase correcta
+    const correctIdx = state.options.findIndex((o) => o.id === ph.id);
+    $$("#options .option").forEach((o, j) => {
+      if (j === correctIdx) o.classList.add("opt-correct");
+      else o.classList.add("opt-dim");
+    });
+    showPhrase(`<b>${ph.name}</b> — ${ph.tag}`);
+
+    // el vagón se engancha marcado como error (detrás de la locomotora)
+    const loco = $("#locomotive");
+    const car = document.createElement("div");
+    car.className = "train-car missed";
+    car.innerHTML = wagonSVG(ph.name, { stroke: "#ff6b5e" });
+    car.setAttribute("aria-hidden", "true");
+    $("#train").insertBefore(car, loco);
+    const train = $("#train");
+    state.rounds += 1;
+    const pct = state.rounds / PHASES.length;
+    train.style.transition = "left .7s cubic-bezier(.22,1,.36,1)";
+    train.style.left = (2 + pct * 62) + "%";
+
+    setTimeout(() => {
+      if (state.rounds >= PHASES.length) {
+        finish();
+      } else {
+        state.idx += 1;
+        state.busy = false;
+        startTurn();
+      }
+    }, isReduced() ? 120 : 1200);
+  }
+
   /* ---------- turnos ---------- */
   function startTurn() {
     makeOptions();
     renderOptions();
     $("#phrase").textContent = "";
-    $("#pb-num").textContent = PHASES[state.idx].num;
     $("#pb-text").textContent = "¿Qué fase sigue?";
+    startRoundTimer();
     const first = $("#options .option");
     if (first) first.focus();
   }
@@ -398,6 +486,8 @@
     state.wrong = 0;
     state.busy = false;
     state.wrongMap = {};
+    state.usedDecoys = [];
+    clearRoundTimer();
 
     // limpiar tren
     $("#train").innerHTML = `<div class="locomotive" id="locomotive"></div>`;
@@ -458,14 +548,28 @@
     };
     $("#btn-sound").addEventListener("click", toggleSound("#btn-sound"));
     $("#hud-sound").addEventListener("click", toggleSound("#hud-sound"));
-    // teclado 1-3
+    // teclado 1-4
     document.addEventListener("keydown", (e) => {
       if (state.screen !== "game" || state.busy) return;
       const n = parseInt(e.key, 10);
-      if (n >= 1 && n <= 3) {
+      if (n >= 1 && n <= 4) {
         const btns = $$("#options .option");
         if (btns[n - 1]) { e.preventDefault(); pick(n - 1, btns[n - 1]); }
       }
+    });
+    // modo reto
+    const retoBtn = $("#btn-reto");
+    const renderRetoBtn = () => {
+      retoBtn.setAttribute("aria-pressed", state.reto ? "true" : "false");
+      retoBtn.textContent = state.reto ? "⏱ MODO RETO: 8s" : "⏱ MODO RETO";
+      retoBtn.title = state.reto ? "Temporizador activado: 8 segundos por fase" : "8 segundos por fase";
+    };
+    renderRetoBtn();
+    retoBtn.addEventListener("click", () => {
+      state.reto = !state.reto;
+      saveBest();
+      renderRetoBtn();
+      sfx.click();
     });
   }
 

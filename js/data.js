@@ -13,3 +13,10 @@ const PHASES = [
   { id: "results", num: "07", name: "RESULTADOS", tag: "Interpretar resultados" },
   { id: "implementation", num: "08", name: "IMPLEMENTACIÓN", tag: "Llevar a la práctica" }
 ];
+
+/* Términos falsos: suenan a fases pero NO forman parte de las ocho
+   etapas de la Investigación de Operaciones del material. */
+const DECOYS = ["ANÁLISIS", "DIAGNÓSTICO", "EVALUACIÓN", "PLANEACIÓN", "EJECUCIÓN", "CONTROL"];
+
+/* Segundos por fase en MODO RETO. */
+const RETO_SECONDS = 8;
