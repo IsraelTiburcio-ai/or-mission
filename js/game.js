@@ -358,6 +358,7 @@
   }
 
   function showResult(elapsed) {
+    optilabResults?.complete({reason:'completed',correct:state.correct,total:PHASES.length,errors:state.wrong,durationMs:elapsed*1000,score:state.score});
     state.screen = "result";
     $("#screen-game").hidden = true;
     $("#screen-result").hidden = false;
@@ -477,6 +478,7 @@
 
   /* ---------- partida ---------- */
   function start() {
+    optilabResults?.start();
     state.idx = 0;
     state.score = 0;
     state.combo = 1;
@@ -574,6 +576,7 @@
   }
 
   /* ---------- arranque ---------- */
+  const optilabResults = window.OptiLabResults?.create('or-mission');
   loadBest();
   bind();
   renderCover();
